@@ -1,6 +1,6 @@
 class CookieBanner extends HTMLElement {
   static get observedAttributes() {
-    return ["lang", "theme"];
+    return ["lang"];
   }
 
   constructor() {
