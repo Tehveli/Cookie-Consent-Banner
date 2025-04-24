@@ -12,7 +12,12 @@ class CookieBanner extends HTMLElement {
 
   connectedCallback() {
     if (localStorage.getItem("cookiesAccepted") === "true") return;
-
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", (_) => {
+        this.lang = this.getAttribute("lang") || "en";
+        this.theme = this.getAttribute("theme") || "light";
+      });
     this.render();
   }
 
@@ -67,6 +72,8 @@ class CookieBanner extends HTMLElement {
 
       .message {
         flex: 1 1 auto;
+        flex-direction: column;
+        display: flex;
         min-width: 200px;
       }
 
@@ -122,8 +129,10 @@ class CookieBanner extends HTMLElement {
       <div class="banner">
         <div class="message">
           ${t.message}
+         <div>
           <a href="https://www.tehveli.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
           <a href="https://www.tehveli.com/terms" target="_blank" rel="noopener noreferrer">Terms and Conditions</a>
+          </div>
         </div>
         <button id="accept">${t.button}</button>
       </div>
