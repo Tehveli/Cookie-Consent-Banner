@@ -7,23 +7,15 @@ class CookieBanner extends HTMLElement {
     super();
     this.attachShadow({ mode: "open" });
     this.lang = this.getAttribute("lang") || "en";
-    this.theme = this.getAttribute("theme") || "light";
   }
 
   connectedCallback() {
     if (localStorage.getItem("cookiesAccepted") === "true") return;
-    window
-      .matchMedia("(prefers-color-scheme: dark)")
-      .addEventListener("change", (_) => {
-        this.lang = this.getAttribute("lang") || "en";
-        this.theme = this.getAttribute("theme") || "light";
-      });
     this.render();
   }
 
   attributeChangedCallback(name, _, newValue) {
     if (name === "lang") this.lang = newValue;
-    if (name === "theme") this.theme = newValue;
     this.render();
   }
 
@@ -57,8 +49,8 @@ class CookieBanner extends HTMLElement {
       }
 
       .banner {
-        background: ${this.theme === "dark" ? "#222" : "#f9f9f9"};
-        color: ${this.theme === "dark" ? "#fff" : "#000"};
+        background: #f9f9f9;
+        color: #000;
         padding: 16px 20px;
         display: flex;
         flex-wrap: wrap;
@@ -68,6 +60,12 @@ class CookieBanner extends HTMLElement {
         box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
         font-size: 1rem;
         animation: slideUp 0.3s ease-out;
+
+        @media (prefers-dark-interface) { 
+          background: #222;
+          color: #fff;
+        }
+
       }
 
       .message {
@@ -78,8 +76,8 @@ class CookieBanner extends HTMLElement {
       }
 
       button {
-        background: ${this.theme === "dark" ? "#fff" : "#000"};
-        color: ${this.theme === "dark" ? "#000" : "#fff"};
+        background: #000;
+        color: #fff;
         border: none;
         padding: 10px 16px;
         border-radius: 8px;
@@ -87,6 +85,11 @@ class CookieBanner extends HTMLElement {
         font-weight: 600;
         font-size: 1rem;
         transition: transform 0.1s ease;
+
+          @media (prefers-dark-interface) { 
+          background: #222;
+          color: #fff;
+        }
       }
 
       button:active {
@@ -95,13 +98,18 @@ class CookieBanner extends HTMLElement {
 
       a {
         color: inherit;
-        text-decoration: underline;
+        text-decoration: none;
         font-weight: 500;
-        margin-left: 6px;
       }
 
       a:hover {
-        text-decoration: none;
+        text-decoration: underline;
+      }
+
+      .links {
+        display: flex;
+        gap: 10px;
+        flex-direction: row;
       }
 
       @media (max-width: 600px) {
@@ -129,7 +137,7 @@ class CookieBanner extends HTMLElement {
       <div class="banner">
         <div class="message">
           ${t.message}
-         <div>
+         <div class="links">
           <a href="https://www.tehveli.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
           <a href="https://www.tehveli.com/terms" target="_blank" rel="noopener noreferrer">Terms and Conditions</a>
           </div>
