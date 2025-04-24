@@ -16,7 +16,7 @@ class CookieBanner extends HTMLElement {
     this.render();
   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
+  attributeChangedCallback(name, _, newValue) {
     if (name === "lang") this.lang = newValue;
     if (name === "theme") this.theme = newValue;
     this.render();
@@ -36,50 +36,98 @@ class CookieBanner extends HTMLElement {
         message: "Usamos cookies para mejorar su experiencia.",
         button: "Aceptar",
       },
-      // Add more languages here
     };
 
     const t = translations[this.lang] || translations["en"];
 
     const styles = `
-        :host {
-          position: fixed;
-          bottom: 0;
-          width: 100%;
-          z-index: 10000;
-          font-family: sans-serif;
-        }
+      :host {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        z-index: 10000;
+        font-family: system-ui, sans-serif;
+        display: block;
+      }
+
+      .banner {
+        background: ${this.theme === "dark" ? "#222" : "#f9f9f9"};
+        color: ${this.theme === "dark" ? "#fff" : "#000"};
+        padding: 16px 20px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
+        font-size: 1rem;
+        animation: slideUp 0.3s ease-out;
+      }
+
+      .message {
+        flex: 1 1 auto;
+        min-width: 200px;
+      }
+
+      button {
+        background: ${this.theme === "dark" ? "#fff" : "#000"};
+        color: ${this.theme === "dark" ? "#000" : "#fff"};
+        border: none;
+        padding: 10px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: transform 0.1s ease;
+      }
+
+      button:active {
+        transform: scale(0.98);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: underline;
+        font-weight: 500;
+        margin-left: 6px;
+      }
+
+      a:hover {
+        text-decoration: none;
+      }
+
+      @media (max-width: 600px) {
         .banner {
-          background: ${this.theme === "dark" ? "#222" : "#f9f9f9"};
-          color: ${this.theme === "dark" ? "#fff" : "#000"};
-          padding: 12px 20px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
+          flex-direction: column;
+          align-items: flex-start;
+          padding: 12px 16px;
+          font-size: 0.95rem;
         }
+
         button {
-          background: ${this.theme === "dark" ? "#fff" : "#000"};
-          color: ${this.theme === "dark" ? "#000" : "#fff"};
-          border: none;
-          padding: 8px 14px;
-          border-radius: 6px;
-          cursor: pointer;
-          font-weight: bold;
+          align-self: stretch;
+          width: 100%;
         }
-      `;
+      }
+
+      @keyframes slideUp {
+        from { transform: translateY(100%); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+    `;
 
     this.shadowRoot.innerHTML = `
-        <style>${styles}</style>
-        <div class="banner">
-          <div>${t.message}</div>
-        <div>
-            <a href="https://www.tehveli.com/privacy" target="_blank" style="margin-right: 10px; color: inherit; text-decoration: underline;">Privacy Policy</a>
-            <a href="https://www.tehveli.com/terms" target="_blank" style="color: inherit; text-decoration: underline;">Terms and Conditions</a>
+      <style>${styles}</style>
+      <div class="banner">
+        <div class="message">
+          ${t.message}
+          <a href="https://www.tehveli.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+          <a href="https://www.tehveli.com/terms" target="_blank" rel="noopener noreferrer">Terms and Conditions</a>
         </div>
-          <button id="accept">${t.button}</button>
-        </div>
-      `;
+        <button id="accept">${t.button}</button>
+      </div>
+    `;
 
     this.shadowRoot.getElementById("accept").onclick = () => {
       localStorage.setItem("cookiesAccepted", "true");
