@@ -29,6 +29,6 @@ This repository contains a shared cookie banner component designed for use acros
 Initialize the cookie banner in your JavaScript file:
 
 ```javascript
-<script src="https://yourcdn.com/cookie-banner.js" defer></script>
+<script src="https://cdn.jsdelivr.net/gh/Tehveli/Cookie-Consent-Banner@main/cookie-banner.js" defer></script>
 <cookie-banner lang="es" theme="light"></cookie-banner>
 ```
