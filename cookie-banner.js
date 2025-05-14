@@ -18,9 +18,11 @@ class CookieBanner extends HTMLElement {
 
     // Listen for system theme changes
     this._themeMediaQuery.addEventListener("change", this._handleThemeChange);
+    console.log("System theme listener attached.");
 
     // Listen for localStorage changes
     window.addEventListener("storage", this._handleStorageChange);
+    console.log("localStorage 'storage' listener attached.");
   }
 
   disconnectedCallback() {
@@ -29,6 +31,7 @@ class CookieBanner extends HTMLElement {
       this._handleThemeChange
     );
     window.removeEventListener("storage", this._handleStorageChange);
+    console.log("Listeners removed.");
   }
 
   attributeChangedCallback(name, _, newValue) {
@@ -44,7 +47,7 @@ class CookieBanner extends HTMLElement {
   }
 
   _handleThemeChange = () => {
-    // Only apply system theme if 'theme' is not explicitly set or is 'system'
+    console.log("System theme changed.");
     if (
       localStorage.getItem("theme") === "system" ||
       !localStorage.getItem("theme")
@@ -54,7 +57,9 @@ class CookieBanner extends HTMLElement {
   };
 
   _handleStorageChange = (event) => {
+    console.log("localStorage changed:", event);
     if (event.key === "theme") {
+      console.log("localStorage 'theme' key changed. Applying theme.");
       this._applyTheme();
     }
   };
@@ -62,6 +67,7 @@ class CookieBanner extends HTMLElement {
   _applyTheme() {
     const bannerElement = this.shadowRoot.querySelector(".banner");
     if (!bannerElement) {
+      console.warn("Banner element not found in shadow DOM.");
       return;
     }
 
@@ -73,9 +79,15 @@ class CookieBanner extends HTMLElement {
     } else if (storedTheme === "light") {
       useDarkTheme = false;
     } else {
-      // Default to system preference if storedTheme is 'system' or not set
       useDarkTheme = this._themeMediaQuery.matches;
     }
+
+    console.log(
+      "Applying theme - storedTheme:",
+      storedTheme,
+      "useDarkTheme:",
+      useDarkTheme
+    );
 
     if (useDarkTheme) {
       bannerElement.classList.add("dark-theme");
