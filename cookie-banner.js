@@ -8,48 +8,27 @@ class CookieBanner extends HTMLElement {
     this.attachShadow({ mode: "open" });
     this.lang = this.getAttribute("lang") || "en";
     this._themeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-
-    // Handler for system theme changes (prefers-color-scheme)
-    this._systemThemeChangeHandler = () => {
-      // Renamed for clarity
-      // Only re-apply theme if local storage theme is not explicitly set
-      if (localStorage.getItem("theme") === null) {
-        this._applyTheme();
-      }
-    };
-
-    // Handler for localStorage changes
-    this._localStorageChangeHandler = (event) => {
-      // Check if the 'theme' key was the one that changed,
-      // or if localStorage was cleared (event.key would be null).
-      if (event.key === "theme" || event.key === null) {
-        this._applyTheme();
-      }
-    };
   }
 
   connectedCallback() {
     if (localStorage.getItem("cookiesAccepted") === "true") {
       return;
     }
-    this.render(); // render() will now call _applyTheme()
+    this.render(); // Initial render will call _applyTheme
 
     // Listen for system theme changes
-    this._themeMediaQuery.addEventListener(
-      "change",
-      this._systemThemeChangeHandler
-    );
+    this._themeMediaQuery.addEventListener("change", this._handleThemeChange);
+
     // Listen for localStorage changes
-    window.addEventListener("storage", this._localStorageChangeHandler);
+    window.addEventListener("storage", this._handleStorageChange);
   }
 
   disconnectedCallback() {
-    // Clean up event listeners when the element is removed
     this._themeMediaQuery.removeEventListener(
       "change",
-      this._systemThemeChangeHandler
+      this._handleThemeChange
     );
-    window.removeEventListener("storage", this._localStorageChangeHandler);
+    window.removeEventListener("storage", this._handleStorageChange);
   }
 
   attributeChangedCallback(name, _, newValue) {
@@ -63,6 +42,22 @@ class CookieBanner extends HTMLElement {
       }
     }
   }
+
+  _handleThemeChange = () => {
+    // Only apply system theme if 'theme' is not explicitly set or is 'system'
+    if (
+      localStorage.getItem("theme") === "system" ||
+      !localStorage.getItem("theme")
+    ) {
+      this._applyTheme();
+    }
+  };
+
+  _handleStorageChange = (event) => {
+    if (event.key === "theme") {
+      this._applyTheme();
+    }
+  };
 
   _applyTheme() {
     const bannerElement = this.shadowRoot.querySelector(".banner");
@@ -78,6 +73,7 @@ class CookieBanner extends HTMLElement {
     } else if (storedTheme === "light") {
       useDarkTheme = false;
     } else {
+      // Default to system preference if storedTheme is 'system' or not set
       useDarkTheme = this._themeMediaQuery.matches;
     }
 
@@ -118,8 +114,8 @@ class CookieBanner extends HTMLElement {
       }
 
       .banner {
-        background: #f9f9f9; /* Light theme default */
-        color: #000; /* Light theme default */
+        background: #f9f9f9;
+        color: #000;
         padding: 16px 20px;
         display: flex;
         flex-wrap: wrap;
@@ -129,12 +125,12 @@ class CookieBanner extends HTMLElement {
         box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
         font-size: 1rem;
         animation: slideUp 0.3s ease-out;
-        transition: background-color 0.3s ease, color 0.3s ease; /* Smooth theme transition */
+        transition: background-color 0.3s ease, color 0.3s ease;
       }
 
       .banner.dark-theme {
-        background: #222; /* User's original dark background */
-        color: #fff;   /* User's original dark text color */
+        background: #222;
+        color: #fff;
       }
 
       .message {
@@ -145,8 +141,8 @@ class CookieBanner extends HTMLElement {
       }
 
       button {
-        background: #000; /* Light theme default */
-        color: #fff;   /* Light theme default */
+        background: #000;
+        color: #fff;
         border: none;
         padding: 10px 16px;
         border-radius: 8px;
@@ -157,7 +153,7 @@ class CookieBanner extends HTMLElement {
       }
 
       .banner.dark-theme button {
-        background: #333; /* Slightly different from banner for better affordance */
+        background: #333;
         color: #fff;
       }
 
@@ -170,9 +166,9 @@ class CookieBanner extends HTMLElement {
         text-decoration: none;
         font-weight: 500;
       }
-      
+
       .banner.dark-theme a {
-        color: #8ab4f8; 
+        color: #8ab4f8;
       }
 
       a:hover {
@@ -226,7 +222,7 @@ class CookieBanner extends HTMLElement {
       this.remove();
     };
 
-    this._applyTheme();
+    this._applyTheme(); // Apply theme on initial render
   }
 }
 
