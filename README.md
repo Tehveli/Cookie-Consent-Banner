@@ -17,3 +17,7 @@ Initialize the cookie banner in your JavaScript file:
 <script src="https://cdn.jsdelivr.net/gh/Tehveli/Cookie-Consent-Banner@main/cookie-banner.js" defer></script>
 <cookie-banner lang="es" theme="light"></cookie-banner>
 ```
+
+## Purge CDN Cache
+
+Use this [link](https://www.jsdelivr.com/tools/purge) to purge the CDN cache.
