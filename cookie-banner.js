@@ -18,11 +18,9 @@ class CookieBanner extends HTMLElement {
 
     // Listen for system theme changes
     this._themeMediaQuery.addEventListener("change", this._handleThemeChange);
-    console.log("System theme listener attached.");
 
     // Listen for localStorage changes
     window.addEventListener("storage", this._handleStorageChange);
-    console.log("localStorage 'storage' listener attached.");
   }
 
   disconnectedCallback() {
@@ -31,7 +29,6 @@ class CookieBanner extends HTMLElement {
       this._handleThemeChange
     );
     window.removeEventListener("storage", this._handleStorageChange);
-    console.log("Listeners removed.");
   }
 
   attributeChangedCallback(name, _, newValue) {
@@ -47,7 +44,6 @@ class CookieBanner extends HTMLElement {
   }
 
   _handleThemeChange = () => {
-    console.log("System theme changed.");
     if (
       localStorage.getItem("theme") === "system" ||
       !localStorage.getItem("theme")
@@ -57,9 +53,7 @@ class CookieBanner extends HTMLElement {
   };
 
   _handleStorageChange = (event) => {
-    console.log("localStorage changed:", event);
     if (event.key === "theme") {
-      console.log("localStorage 'theme' key changed. Applying theme.");
       this._applyTheme();
     }
   };
@@ -81,13 +75,6 @@ class CookieBanner extends HTMLElement {
     } else {
       useDarkTheme = this._themeMediaQuery.matches;
     }
-
-    console.log(
-      "Applying theme - storedTheme:",
-      storedTheme,
-      "useDarkTheme:",
-      useDarkTheme
-    );
 
     if (useDarkTheme) {
       bannerElement.classList.add("dark-theme");
